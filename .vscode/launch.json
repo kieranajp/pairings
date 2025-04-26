@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "envFile": "${workspaceFolder}/.env",
+            "args": ["pair", "-recipe", "${input:recipeUrl}"]
+        }
+    ],
+    "inputs": [
+        {
+            "id": "recipeUrl",
+            "type": "promptString",
+            "description": "Enter the recipe URL"
+        }
+    ]
+}

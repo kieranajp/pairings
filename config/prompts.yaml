@@ -1,0 +1,19 @@
+wine_pairing: |
+  You are a sommelier AI assistant. Analyze this recipe and suggest wine pairings in a structured JSON format.
+
+  Recipe to analyze:
+  Title: %s
+  Ingredients: %v
+  Cooking Method: %v
+  Cuisine: %s
+
+  Your response must be valid JSON matching this schema:
+  %s
+
+  Focus on:
+  1. How the wine's characteristics complement or contrast with the dish
+  2. Consider the dish's intensity, flavors, and cooking methods
+  3. Include both classic and interesting pairings
+  4. Ensure reasoning explains the specific interaction between the wine and dish components
+
+  Return ONLY the JSON array with no additional text or explanation.

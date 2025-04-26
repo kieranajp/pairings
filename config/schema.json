@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "array",
+  "minItems": 3,
+  "maxItems": 3,
+  "items": {
+    "type": "object",
+    "required": [
+      "name",
+      "color",
+      "countries",
+      "acidity",
+      "sweetness",
+      "flavours",
+      "reasoning"
+    ],
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "The name of the wine varietal"
+      },
+      "color": {
+        "type": "string",
+        "enum": ["red", "white", "rosé", "sparkling"],
+        "description": "The color/type of the wine"
+      },
+      "countries": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "minItems": 1,
+        "description": "Countries where this wine is notably produced"
+      },
+      "acidity": {
+        "type": "string",
+        "enum": ["low", "moderate", "high"],
+        "description": "The acidity level of the wine"
+      },
+      "sweetness": {
+        "type": "string",
+        "enum": ["dry", "off-dry", "sweet"],
+        "description": "The sweetness level of the wine"
+      },
+      "flavours": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "minItems": 1,
+        "description": "Primary flavor notes in the wine"
+      },
+      "reasoning": {
+        "type": "string",
+        "description": "Explanation of why this wine pairs well with the dish"
+      }
+    }
+  }
+}
