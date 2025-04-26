@@ -1,0 +1,132 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": [
+    "recommendations",
+    "explanation"
+  ],
+  "properties": {
+    "recommendations": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "type",
+          "grape",
+          "region",
+          "price",
+          "tasting_notes",
+          "pairing_explanation",
+          "confidence_score"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the wine"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["red", "white", "rose", "sparkling"],
+            "description": "The type of wine"
+          },
+          "grape": {
+            "type": "string",
+            "description": "The primary grape variety"
+          },
+          "region": {
+            "type": "string",
+            "description": "The wine region"
+          },
+          "price": {
+            "type": "object",
+            "required": ["amount", "currency"],
+            "properties": {
+              "amount": {
+                "type": "number",
+                "description": "The price in the specified currency"
+              },
+              "currency": {
+                "type": "string",
+                "description": "The currency code (e.g., EUR, USD)"
+              }
+            }
+          },
+          "tasting_notes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "description": "Key tasting notes and characteristics"
+          },
+          "pairing_explanation": {
+            "type": "string",
+            "description": "Explanation of why this wine works well with the dish"
+          },
+          "confidence_score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Confidence score for this recommendation (0-1)"
+          }
+        }
+      }
+    },
+    "explanation": {
+      "type": "string",
+      "description": "Overall explanation of the wine selection process and how it matches the preferences"
+    },
+    "upgrade_suggestion": {
+      "type": "object",
+      "description": "Optional premium wine suggestion",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the premium wine"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["red", "white", "rose", "sparkling"],
+          "description": "The type of wine"
+        },
+        "grape": {
+          "type": "string",
+          "description": "The primary grape variety"
+        },
+        "region": {
+          "type": "string",
+          "description": "The wine region"
+        },
+        "price": {
+          "type": "object",
+          "required": ["amount", "currency"],
+          "properties": {
+            "amount": {
+              "type": "number",
+              "description": "The price in the specified currency"
+            },
+            "currency": {
+              "type": "string",
+              "description": "The currency code (e.g., EUR, USD)"
+            }
+          }
+        },
+        "tasting_notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "description": "Key tasting notes and characteristics"
+        },
+        "upgrade_reasoning": {
+          "type": "string",
+          "description": "Explanation of why this premium wine would be worth the extra cost"
+        }
+      }
+    }
+  }
+}

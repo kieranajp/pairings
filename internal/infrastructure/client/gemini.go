@@ -38,6 +38,7 @@ type geminiResponse struct {
 	} `json:"candidates"`
 }
 
+// NewGeminiClient creates a new Gemini client with the given API key and model
 func NewGeminiClient(apiKey string, model string) *GeminiClient {
 	if model == "" {
 		model = defaultModel
@@ -50,7 +51,8 @@ func NewGeminiClient(apiKey string, model string) *GeminiClient {
 	}
 }
 
-func (c *GeminiClient) GetPairings(ctx context.Context, prompt string) (string, error) {
+// Complete implements the LLMClient interface
+func (c *GeminiClient) Complete(ctx context.Context, prompt string) (string, error) {
 	url := fmt.Sprintf("%s/models/%s:generateContent?key=%s", baseURL, c.model, c.apiKey)
 
 	reqBody := geminiRequest{

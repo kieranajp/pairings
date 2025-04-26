@@ -9,6 +9,7 @@ A CLI tool that suggests wine pairings for recipes. Given a recipe URL, it analy
 - Detailed reasoning for each pairing
 - Configurable logging levels
 - Support for different Gemini models
+- Wine preference profile creation
 
 ## Installation
 
@@ -18,8 +19,22 @@ go install github.com/kieranajp/pairings@latest
 
 ## Usage
 
+### Pair Command
 ```bash
 pairings pair --recipe "https://example.com/recipe"
+```
+
+### Preferences Command
+```bash
+pairings preferences \
+  --dish "Beef Bourguignon" \
+  --budget-min 2000 \
+  --budget-max 5000 \
+  --currency EUR \
+  --wine-type red \
+  --body full \
+  --taste-preferences "fruity" "oaky" \
+  --occasion "dinner party"
 ```
 
 ### Required Environment Variables
@@ -43,6 +58,16 @@ pairings pair --recipe "https://example.com/recipe"
 
 # Pair command flags
 --recipe string           Recipe URL to analyze
+
+# Preferences command flags
+--dish string            Name of the dish to pair with
+--budget-min int64       Minimum budget in cents (e.g., 2000 for 20.00)
+--budget-max int64       Maximum budget in cents (e.g., 5000 for 50.00)
+--currency string        Currency code (e.g., EUR, USD) (default: "EUR")
+--wine-type string       Preferred wine type (red, white, rose, sparkling)
+--body string           Preferred wine body (light, medium, full)
+--taste-preferences     Taste preferences (e.g., fruity, dry, oaky)
+--occasion string       Occasion context (e.g., dinner party, casual meal)
 ```
 
 ## Development

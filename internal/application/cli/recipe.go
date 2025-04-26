@@ -11,20 +11,20 @@ import (
 )
 
 type RecipeHandler struct {
-	geminiClient  *client.GeminiClient
+	llm           client.LLMClient
 	recipeService *recipe.Service
 	promptGen     *promptGenerator.Generator
 	logger        logger.Logger
 }
 
 func NewRecipeHandler(
-	geminiClient *client.GeminiClient,
+	llm client.LLMClient,
 	recipeService *recipe.Service,
 	promptGen *promptGenerator.Generator,
 	logger logger.Logger,
 ) *RecipeHandler {
 	return &RecipeHandler{
-		geminiClient:  geminiClient,
+		llm:           llm,
 		recipeService: recipeService,
 		promptGen:     promptGen,
 		logger:        logger,
@@ -43,11 +43,15 @@ func (h *RecipeHandler) Handle(ctx context.Context, url string) error {
 	h.logger.Info().Str("title", r.Title).Msg("Got recipe details")
 
 	// Generate prompt
-	prompt := h.promptGen.GenerateWinePairingPrompt(r)
+	prompt, err := h.promptGen.GenerateWinePairingPrompt(r)
+	if err != nil {
+		h.logger.Error().Err(err).Msg("Failed to generate prompt")
+		return fmt.Errorf("failed to generate prompt: %w", err)
+	}
 	h.logger.Debug().Str("prompt", prompt).Msg("Generated prompt")
 
-	// Get wine pairings
-	pairings, err := h.geminiClient.GetPairings(ctx, prompt)
+	// Get wine pairings from LLM
+	pairings, err := h.llm.Complete(ctx, prompt)
 	if err != nil {
 		h.logger.Error().Err(err).Msg("Failed to get pairings")
 		return fmt.Errorf("failed to get pairings: %w", err)
