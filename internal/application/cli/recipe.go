@@ -7,20 +7,20 @@ import (
 	"github.com/kieranajp/pairings/internal/domain/recipe"
 	"github.com/kieranajp/pairings/internal/infrastructure/client"
 	"github.com/kieranajp/pairings/internal/infrastructure/logger"
-	promptGenerator "github.com/kieranajp/pairings/internal/infrastructure/prompt"
+	"github.com/kieranajp/pairings/internal/infrastructure/prompt"
 )
 
 type RecipeHandler struct {
 	llm           client.LLMClient
 	recipeService *recipe.Service
-	promptGen     *promptGenerator.Generator
+	promptGen     prompt.Generator
 	logger        logger.Logger
 }
 
 func NewRecipeHandler(
 	llm client.LLMClient,
 	recipeService *recipe.Service,
-	promptGen *promptGenerator.Generator,
+	promptGen prompt.Generator,
 	logger logger.Logger,
 ) *RecipeHandler {
 	return &RecipeHandler{

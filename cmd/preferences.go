@@ -2,16 +2,17 @@ package cmd
 
 import (
 	appCLI "github.com/kieranajp/pairings/internal/application/cli"
+	"github.com/kieranajp/pairings/internal/domain/wine"
 	"github.com/kieranajp/pairings/internal/infrastructure/client"
 	"github.com/kieranajp/pairings/internal/infrastructure/logger"
-	promptGenerator "github.com/kieranajp/pairings/internal/infrastructure/prompt"
+	"github.com/kieranajp/pairings/internal/infrastructure/prompt"
 	"github.com/urfave/cli/v2"
 )
 
 // PreferencesCommand implements the Command interface for wine preferences
 type PreferencesCommand struct {
 	llm       client.LLMClient
-	promptGen *promptGenerator.Generator
+	promptGen prompt.Generator
 	log       logger.Logger
 	schema    string
 }
@@ -26,7 +27,7 @@ func (c *PreferencesCommand) WithLLMClient(llm client.LLMClient) *PreferencesCom
 	return c
 }
 
-func (c *PreferencesCommand) WithPromptGen(promptGen *promptGenerator.Generator) *PreferencesCommand {
+func (c *PreferencesCommand) WithPromptGen(promptGen prompt.Generator) *PreferencesCommand {
 	c.promptGen = promptGen
 	return c
 }
@@ -95,11 +96,8 @@ func (c *PreferencesCommand) Flags() []cli.Flag {
 
 // Action returns a function that will be executed when the command is run
 func (c *PreferencesCommand) Action(ctx *cli.Context) error {
-	handler := appCLI.NewPreferencesHandler(
-		c.llm,
-		c.promptGen,
-		c.log,
-	)
+	service := wine.NewService(c.llm, c.promptGen, c.log)
+	handler := appCLI.NewPreferencesHandler(service)
 	return handler.Handle(
 		ctx.Context,
 		ctx.String("dish"),

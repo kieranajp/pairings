@@ -75,12 +75,3 @@ type WineRecommendation struct {
 	ConfidenceScore    float64
 	UpgradeSuggestion  *Wine // Optional premium suggestion
 }
-
-// PreferenceProfile represents user preferences for wine recommendations
-type PreferenceProfile struct {
-	Dish             string
-	Budget           Budget
-	PreferredStyle   *WineStyle // Optional - nil means no preference
-	TastePreferences []string   // "fruity", "dry", etc.
-	Occasion         string     // Optional context
-}

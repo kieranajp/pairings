@@ -5,7 +5,7 @@ import (
 	"github.com/kieranajp/pairings/internal/domain/recipe"
 	"github.com/kieranajp/pairings/internal/infrastructure/client"
 	"github.com/kieranajp/pairings/internal/infrastructure/logger"
-	promptGenerator "github.com/kieranajp/pairings/internal/infrastructure/prompt"
+	"github.com/kieranajp/pairings/internal/infrastructure/prompt"
 	"github.com/urfave/cli/v2"
 )
 
@@ -13,7 +13,7 @@ import (
 type PairCommand struct {
 	llm           client.LLMClient
 	recipeService *recipe.Service
-	promptGen     *promptGenerator.Generator
+	promptGen     prompt.Generator
 	log           logger.Logger
 }
 
@@ -32,7 +32,7 @@ func (c *PairCommand) WithRecipeService(recipeService *recipe.Service) *PairComm
 	return c
 }
 
-func (c *PairCommand) WithPromptGen(promptGen *promptGenerator.Generator) *PairCommand {
+func (c *PairCommand) WithPromptGen(promptGen prompt.Generator) *PairCommand {
 	c.promptGen = promptGen
 	return c
 }
