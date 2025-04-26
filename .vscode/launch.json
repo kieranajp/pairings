@@ -2,20 +2,101 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch",
+            "name": "Recipe Pairing",
             "type": "go",
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}",
             "envFile": "${workspaceFolder}/.env",
             "args": ["pair", "-recipe", "${input:recipeUrl}"]
+        },
+        {
+            "name": "Wine Preferences (No prompt)",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": [
+                "preferences",
+                "--dish", "Thai Green Curry with Salmon",
+                "--budget-min", "1500",
+                "--budget-max", "3000",
+                "--currency", "EUR",
+            ],
+        },
+        {
+            "name": "Wine Preferences (Prompt)",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": [
+                "preferences",
+                "--dish", "${input:dish}",
+                "--budget-min", "${input:budgetMin}",
+                "--budget-max", "${input:budgetMax}",
+                "--currency", "${input:currency}",
+                "--wine-type", "${input:wineType}",
+                "--body", "${input:wineBody}",
+                "--taste-preferences", "${input:tastePreferences}",
+                "--occasion", "${input:occasion}"
+            ],
         }
     ],
     "inputs": [
         {
             "id": "recipeUrl",
             "type": "promptString",
-            "description": "Enter the recipe URL"
+            "description": "Enter the recipe URL",
+            "default": "https://www.deliaonline.com/recipes/international/american-mexican-and-caribbean/mexican-enchiladas-with-cheese?utm_source=rd&utm_medium=d&utm_campaign=otn&utm_content=from--recipes/cuisine/exotic/mexican/mexican-enchiladas-with-cheese.html--to--node/12861"
+        },
+        {
+            "id": "dish",
+            "type": "promptString",
+            "description": "Enter the dish name (required)",
+            "default": "Thai Green Curry with Salmon"
+        },
+        {
+            "id": "budgetMin",
+            "type": "promptString",
+            "description": "Enter minimum budget in cents (required, e.g., 1500 for 15.00)",
+            "default": "1500"
+        },
+        {
+            "id": "budgetMax",
+            "type": "promptString",
+            "description": "Enter maximum budget in cents (required, e.g., 3000 for 30.00)",
+            "default": "3000"
+        },
+        {
+            "id": "currency",
+            "type": "promptString",
+            "description": "Enter currency code (optional, e.g., EUR, USD)",
+            "default": "EUR"
+        },
+        {
+            "id": "wineType",
+            "type": "promptString",
+            "description": "Enter preferred wine type (optional: red, white, rose, sparkling)",
+            "default": "white"
+        },
+        {
+            "id": "wineBody",
+            "type": "promptString",
+            "description": "Enter preferred wine body (optional: light, medium, full)",
+            "default": ""
+        },
+        {
+            "id": "tastePreferences",
+            "type": "promptString",
+            "description": "Enter taste preferences (optional, comma-separated, e.g., fruity, dry, oaky)",
+            "default": ""
+        },
+        {
+            "id": "occasion",
+            "type": "promptString",
+            "description": "Enter occasion (optional, e.g., dinner party, romantic meal)",
+            "default": "romantic meal"
         }
     ]
 }
