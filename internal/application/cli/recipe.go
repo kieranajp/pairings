@@ -43,7 +43,11 @@ func (h *RecipeHandler) Handle(ctx context.Context, url string) error {
 	h.logger.Info().Str("title", r.Title).Msg("Got recipe details")
 
 	// Generate prompt
-	prompt := h.promptGen.GenerateWinePairingPrompt(r)
+	prompt, err := h.promptGen.GenerateWinePairingPrompt(r)
+	if err != nil {
+		h.logger.Error().Err(err).Msg("Failed to generate prompt")
+		return fmt.Errorf("failed to generate prompt: %w", err)
+	}
 	h.logger.Debug().Str("prompt", prompt).Msg("Generated prompt")
 
 	// Get wine pairings

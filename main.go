@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	recipeCLI "github.com/kieranajp/pairings/internal/application/cli"
+	"github.com/kieranajp/pairings/cmd"
 	"github.com/kieranajp/pairings/internal/domain/recipe"
 	"github.com/kieranajp/pairings/internal/infrastructure/client"
 	"github.com/kieranajp/pairings/internal/infrastructure/logger"
@@ -13,18 +13,21 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-//go:embed config/schema.json
-var schema string
+//go:embed config/pairings_schema.json
+var pairingsSchema string
+
+//go:embed config/preferences_schema.json
+var preferencesSchema string
 
 //go:embed config/prompts.yaml
 var prompts string
 
 var (
-	geminiClient  *client.GeminiClient
-	recipeService *recipe.Service
-	promptGen     *promptGenerator.Generator
-	log           logger.Logger
-	app           *cli.App
+	geminiClient      *client.GeminiClient
+	recipeService     *recipe.Service
+	pairingsPromptGen *promptGenerator.Generator
+	prefsPromptGen    *promptGenerator.Generator
+	log               logger.Logger
 )
 
 func setup(c *cli.Context) error {
@@ -37,15 +40,24 @@ func setup(c *cli.Context) error {
 	recipeService = recipe.NewService()
 
 	var err error
-	promptGen, err = promptGenerator.NewGenerator(schema, prompts)
+	pairingsPromptGen, err = promptGenerator.NewGenerator(pairingsSchema, prompts)
 	if err != nil {
-		return fmt.Errorf("failed to initialize prompt generator: %w", err)
+		return fmt.Errorf("failed to initialize pairings prompt generator: %w", err)
+	}
+
+	prefsPromptGen, err = promptGenerator.NewGenerator(preferencesSchema, prompts)
+	if err != nil {
+		return fmt.Errorf("failed to initialize preferences prompt generator: %w", err)
 	}
 
 	return nil
 }
-func main() {
-	app = &cli.App{
+
+func newApp() *cli.App {
+	preferences := cmd.NewPreferencesCommand()
+	pair := cmd.NewPairCommand()
+
+	return &cli.App{
 		Name:  "pairings",
 		Usage: "Find wine pairings for recipes",
 		Flags: []cli.Flag{
@@ -70,28 +82,43 @@ func main() {
 		},
 		Commands: []*cli.Command{
 			{
-				Name:  "pair",
-				Usage: "Get wine pairings for a recipe URL",
-				Flags: []cli.Flag{
-					&cli.StringFlag{
-						Name:     "recipe",
-						Usage:    "Recipe URL",
-						Required: true,
-					},
-				},
+				Name:  preferences.Name(),
+				Usage: preferences.Usage(),
+				Flags: preferences.Flags(),
 				Action: func(c *cli.Context) error {
-					handler := recipeCLI.NewRecipeHandler(
-						geminiClient,
-						recipeService,
-						promptGen,
-						log,
-					)
-					return handler.Handle(c.Context, c.String("recipe"))
+					if err := setup(c); err != nil {
+						return err
+					}
+					return preferences.
+						WithGeminiClient(geminiClient).
+						WithPromptGen(prefsPromptGen).
+						WithLog(log).
+						WithSchema(preferencesSchema).
+						Action(c)
+				},
+			},
+			{
+				Name:  pair.Name(),
+				Usage: pair.Usage(),
+				Flags: pair.Flags(),
+				Action: func(c *cli.Context) error {
+					if err := setup(c); err != nil {
+						return err
+					}
+					return pair.
+						WithGeminiClient(geminiClient).
+						WithRecipeService(recipeService).
+						WithPromptGen(pairingsPromptGen).
+						WithLog(log).
+						Action(c)
 				},
 			},
 		},
-		Before: setup,
 	}
+}
+
+func main() {
+	app := newApp()
 
 	if err := app.Run(os.Args); err != nil {
 		log.Error().Err(err).Msg("Application failed")

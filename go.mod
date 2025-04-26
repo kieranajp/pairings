@@ -4,6 +4,7 @@ go 1.24.2
 
 require (
 	github.com/PuerkitoBio/goquery v1.10.3
+	github.com/Rhymond/go-money v1.0.14
 	github.com/rs/zerolog v1.34.0
 	github.com/stretchr/testify v1.10.0
 	github.com/urfave/cli/v2 v2.27.6

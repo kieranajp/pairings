@@ -17,3 +17,26 @@ wine_pairing: |
   4. Ensure reasoning explains the specific interaction between the wine and dish components
 
   Return ONLY the JSON array with no additional text or explanation.
+
+wine_preferences: |
+  You are a sommelier AI assistant. Based on the following preferences, suggest wine recommendations in a structured JSON format.
+
+  Preference Profile:
+  Dish: %s
+  Budget: %s %s - %s %s
+  %s
+  %s
+  %s
+
+  Your response must be valid JSON matching this schema:
+  %s
+
+  Focus on:
+  1. Matching the wine characteristics to the dish and preferences
+  2. Staying within the specified budget range
+  3. Considering the occasion and taste preferences
+  4. Providing detailed tasting notes and pairing explanations
+  5. Including a confidence score for each recommendation
+  6. Optionally suggesting a premium upgrade slightly above the budget if it would significantly enhance the experience
+
+  Return ONLY the JSON object with no additional text, markup including markdown formatting, or explanation.
