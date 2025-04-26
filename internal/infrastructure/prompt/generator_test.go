@@ -45,45 +45,63 @@ func TestNewGenerator(t *testing.T) {
 	}
 }
 
-func TestGeneratePrompt(t *testing.T) {
+func TestGenerateWineRecommendationPrompt(t *testing.T) {
 	gen, err := NewGenerator(
 		`{"type": "array"}`,
-		`wine_pairing: "Recipe: %s\nIngredients: %v\nMethod: %v\nCuisine: %s\nSchema: %s"`,
+		`wine_preferences: "Dish: %s\nBudget: %s %s - %s %s\n%s\n%s\n%s\nSchema: %s"`,
 	)
 	assert.NoError(t, err)
 
 	tests := []struct {
-		name        string
-		promptName  string
-		args        []interface{}
-		wantErr     bool
-		errContains string
-		expected    string
+		name           string
+		dish           string
+		budgetMin      string
+		budgetMax      string
+		currency       string
+		styleStr       string
+		preferencesStr string
+		occasionStr    string
+		wantErr        bool
+		errContains    string
+		expected       string
 	}{
 		{
-			name:       "valid prompt",
-			promptName: "wine_pairing",
-			args: []interface{}{
-				"Test Recipe",
-				[]string{"ingredient1", "ingredient2"},
-				[]string{"step1", "step2"},
-				"Test Cuisine",
-			},
-			wantErr:  false,
-			expected: "Recipe: Test Recipe\nIngredients: [ingredient1 ingredient2]\nMethod: [step1 step2]\nCuisine: Test Cuisine\nSchema: {\"type\": \"array\"}",
+			name:           "valid prompt",
+			dish:           "steak",
+			budgetMin:      "20",
+			budgetMax:      "50",
+			currency:       "USD",
+			styleStr:       "Preferred Style: red, full body",
+			preferencesStr: "Taste Preferences: [bold dry]",
+			occasionStr:    "Occasion: dinner",
+			wantErr:        false,
+			expected:       "Dish: steak\nBudget: 20 USD - 50 USD\nPreferred Style: red, full body\nTaste Preferences: [bold dry]\nOccasion: dinner\nSchema: {\"type\": \"array\"}",
 		},
 		{
-			name:        "missing prompt",
-			promptName:  "nonexistent",
-			args:        []interface{}{},
-			wantErr:     true,
-			errContains: "prompt template not found",
+			name:           "missing prompt",
+			dish:           "steak",
+			budgetMin:      "20",
+			budgetMax:      "50",
+			currency:       "USD",
+			styleStr:       "No specific style preferences",
+			preferencesStr: "No specific taste preferences",
+			occasionStr:    "No specific occasion",
+			wantErr:        false,
+			expected:       "Dish: steak\nBudget: 20 USD - 50 USD\nNo specific style preferences\nNo specific taste preferences\nNo specific occasion\nSchema: {\"type\": \"array\"}",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actual, err := gen.GeneratePrompt(tt.promptName, tt.args...)
+			actual, err := gen.GenerateWineRecommendationPrompt(
+				tt.dish,
+				tt.budgetMin,
+				tt.budgetMax,
+				tt.currency,
+				tt.styleStr,
+				tt.preferencesStr,
+				tt.occasionStr,
+			)
 			if tt.wantErr {
 				assert.Error(t, err)
 				assert.Contains(t, err.Error(), tt.errContains)

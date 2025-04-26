@@ -14,10 +14,15 @@ const (
 	defaultModel = "gemini-2.0-flash"
 )
 
+// HTTPClient is an interface for making HTTP requests
+type HTTPClient interface {
+	Do(*http.Request) (*http.Response, error)
+}
+
 type GeminiClient struct {
 	apiKey string
 	model  string
-	client *http.Client
+	client HTTPClient
 }
 
 type geminiRequest struct {

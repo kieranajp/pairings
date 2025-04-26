@@ -9,7 +9,7 @@ import (
 	"github.com/kieranajp/pairings/internal/domain/recipe"
 	"github.com/kieranajp/pairings/internal/infrastructure/client"
 	"github.com/kieranajp/pairings/internal/infrastructure/logger"
-	promptGenerator "github.com/kieranajp/pairings/internal/infrastructure/prompt"
+	"github.com/kieranajp/pairings/internal/infrastructure/prompt"
 	"github.com/urfave/cli/v2"
 )
 
@@ -27,8 +27,8 @@ var (
 	prefsLLM       client.LLMClient
 	pairingsLLM    client.LLMClient
 	recipeService  *recipe.Service
-	pairingsPrompt *promptGenerator.Generator
-	prefsPrompt    *promptGenerator.Generator
+	pairingsPrompt prompt.Generator
+	prefsPrompt    prompt.Generator
 	log            logger.Logger
 )
 
@@ -48,12 +48,12 @@ func setup(c *cli.Context) error {
 	recipeService = recipe.NewService()
 
 	var err error
-	pairingsPrompt, err = promptGenerator.NewGenerator(pairingsSchema, prompts)
+	pairingsPrompt, err = prompt.NewGenerator(pairingsSchema, prompts)
 	if err != nil {
 		return fmt.Errorf("failed to initialize pairings prompt generator: %w", err)
 	}
 
-	prefsPrompt, err = promptGenerator.NewGenerator(preferencesSchema, prompts)
+	prefsPrompt, err = prompt.NewGenerator(preferencesSchema, prompts)
 	if err != nil {
 		return fmt.Errorf("failed to initialize preferences prompt generator: %w", err)
 	}

@@ -1,5 +1,8 @@
 # Pairings
 
+[![Main](https://github.com/kieranajp/pairings/actions/workflows/main.yml/badge.svg)](https://github.com/kieranajp/pairings/actions/workflows/main.yml)
+[![codecov](https://codecov.io/gh/kieranajp/pairings/branch/main/graph/badge.svg)](https://codecov.io/gh/kieranajp/pairings)
+
 A CLI tool that suggests wine pairings for recipes. Given a recipe URL, it analyzes the dish and suggests three wines that would pair well, including detailed reasoning for each pairing.
 
 ## Features
