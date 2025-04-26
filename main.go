@@ -23,29 +23,37 @@ var preferencesSchema string
 var prompts string
 
 var (
-	geminiClient      *client.GeminiClient
-	recipeService     *recipe.Service
-	pairingsPromptGen *promptGenerator.Generator
-	prefsPromptGen    *promptGenerator.Generator
-	log               logger.Logger
+	baseLLM        client.LLMClient
+	prefsLLM       client.LLMClient
+	pairingsLLM    client.LLMClient
+	recipeService  *recipe.Service
+	pairingsPrompt *promptGenerator.Generator
+	prefsPrompt    *promptGenerator.Generator
+	log            logger.Logger
 )
 
 func setup(c *cli.Context) error {
 	log = logger.New(c.String("log-level"))
-	geminiClient = client.NewGeminiClient(
+
+	// Create base LLM client
+	baseLLM = client.NewGeminiClient(
 		c.String("gemini-api-key"),
 		c.String("gemini-model"),
 	)
 
+	// Create decorated clients for different schemas
+	prefsLLM = client.NewValidatorDecorator(baseLLM, preferencesSchema)
+	pairingsLLM = client.NewValidatorDecorator(baseLLM, pairingsSchema)
+
 	recipeService = recipe.NewService()
 
 	var err error
-	pairingsPromptGen, err = promptGenerator.NewGenerator(pairingsSchema, prompts)
+	pairingsPrompt, err = promptGenerator.NewGenerator(pairingsSchema, prompts)
 	if err != nil {
 		return fmt.Errorf("failed to initialize pairings prompt generator: %w", err)
 	}
 
-	prefsPromptGen, err = promptGenerator.NewGenerator(preferencesSchema, prompts)
+	prefsPrompt, err = promptGenerator.NewGenerator(preferencesSchema, prompts)
 	if err != nil {
 		return fmt.Errorf("failed to initialize preferences prompt generator: %w", err)
 	}
@@ -90,10 +98,9 @@ func newApp() *cli.App {
 						return err
 					}
 					return preferences.
-						WithGeminiClient(geminiClient).
-						WithPromptGen(prefsPromptGen).
+						WithLLMClient(prefsLLM).
+						WithPromptGen(prefsPrompt).
 						WithLog(log).
-						WithSchema(preferencesSchema).
 						Action(c)
 				},
 			},
@@ -106,9 +113,9 @@ func newApp() *cli.App {
 						return err
 					}
 					return pair.
-						WithGeminiClient(geminiClient).
+						WithLLMClient(pairingsLLM).
 						WithRecipeService(recipeService).
-						WithPromptGen(pairingsPromptGen).
+						WithPromptGen(pairingsPrompt).
 						WithLog(log).
 						Action(c)
 				},

@@ -8,29 +8,25 @@ import (
 	"github.com/kieranajp/pairings/internal/infrastructure/client"
 	"github.com/kieranajp/pairings/internal/infrastructure/logger"
 	promptGenerator "github.com/kieranajp/pairings/internal/infrastructure/prompt"
-	"github.com/xeipuuv/gojsonschema"
 )
 
 // PreferencesHandler handles the preferences command
 type PreferencesHandler struct {
-	geminiClient *client.GeminiClient
-	promptGen    *promptGenerator.Generator
-	log          logger.Logger
-	schema       string
+	llm       client.LLMClient
+	promptGen *promptGenerator.Generator
+	log       logger.Logger
 }
 
 // NewPreferencesHandler creates a new preferences handler
 func NewPreferencesHandler(
-	geminiClient *client.GeminiClient,
+	llm client.LLMClient,
 	promptGen *promptGenerator.Generator,
 	log logger.Logger,
-	schema string,
 ) *PreferencesHandler {
 	return &PreferencesHandler{
-		geminiClient: geminiClient,
-		promptGen:    promptGen,
-		log:          log,
-		schema:       schema,
+		llm:       llm,
+		promptGen: promptGen,
+		log:       log,
 	}
 }
 
@@ -85,31 +81,16 @@ func (h *PreferencesHandler) Handle(
 	}
 	h.log.Debug().Str("prompt", prompt).Msg("Generated prompt")
 
-	// Get wine recommendations
-	rawResponse, err := h.geminiClient.GetPairings(ctx, prompt)
+	// Get recommendations from LLM
+	recommendations, err := h.llm.Complete(ctx, prompt)
 	if err != nil {
 		h.log.Error().Err(err).Msg("Failed to get recommendations")
 		return fmt.Errorf("failed to get recommendations: %w", err)
 	}
 
-	// Validate against schema
-	schemaLoader := gojsonschema.NewStringLoader(h.schema)
-	documentLoader := gojsonschema.NewStringLoader(rawResponse)
-
-	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
-	if err != nil {
-		h.log.Error().Err(err).Msg("Failed to validate response")
-		return fmt.Errorf("failed to validate response: %w", err)
-	}
-
-	if !result.Valid() {
-		h.log.Error().Interface("errors", result.Errors()).Msg("Invalid response")
-		return fmt.Errorf("invalid response: %v", result.Errors())
-	}
-
 	// Display results
 	fmt.Println("Wine Recommendations for:", profile.Dish)
-	fmt.Println(rawResponse)
+	fmt.Println(recommendations)
 
 	return nil
 }

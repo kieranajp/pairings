@@ -10,10 +10,10 @@ import (
 
 // PreferencesCommand implements the Command interface for wine preferences
 type PreferencesCommand struct {
-	geminiClient *client.GeminiClient
-	promptGen    *promptGenerator.Generator
-	log          logger.Logger
-	schema       string
+	llm       client.LLMClient
+	promptGen *promptGenerator.Generator
+	log       logger.Logger
+	schema    string
 }
 
 // NewPreferencesCommand creates a new preferences command
@@ -21,8 +21,8 @@ func NewPreferencesCommand() *PreferencesCommand {
 	return &PreferencesCommand{}
 }
 
-func (c *PreferencesCommand) WithGeminiClient(geminiClient *client.GeminiClient) *PreferencesCommand {
-	c.geminiClient = geminiClient
+func (c *PreferencesCommand) WithLLMClient(llm client.LLMClient) *PreferencesCommand {
+	c.llm = llm
 	return c
 }
 
@@ -96,10 +96,9 @@ func (c *PreferencesCommand) Flags() []cli.Flag {
 // Action returns a function that will be executed when the command is run
 func (c *PreferencesCommand) Action(ctx *cli.Context) error {
 	handler := appCLI.NewPreferencesHandler(
-		c.geminiClient,
+		c.llm,
 		c.promptGen,
 		c.log,
-		c.schema,
 	)
 	return handler.Handle(
 		ctx.Context,

@@ -11,7 +11,7 @@ import (
 
 // PairCommand implements the Command interface for wine pairings
 type PairCommand struct {
-	geminiClient  *client.GeminiClient
+	llm           client.LLMClient
 	recipeService *recipe.Service
 	promptGen     *promptGenerator.Generator
 	log           logger.Logger
@@ -22,8 +22,8 @@ func NewPairCommand() *PairCommand {
 	return &PairCommand{}
 }
 
-func (c *PairCommand) WithGeminiClient(geminiClient *client.GeminiClient) *PairCommand {
-	c.geminiClient = geminiClient
+func (c *PairCommand) WithLLMClient(llm client.LLMClient) *PairCommand {
+	c.llm = llm
 	return c
 }
 
@@ -66,7 +66,7 @@ func (c *PairCommand) Flags() []cli.Flag {
 // Action returns a function that will be executed when the command is run
 func (c *PairCommand) Action(ctx *cli.Context) error {
 	handler := recipeCLI.NewRecipeHandler(
-		c.geminiClient,
+		c.llm,
 		c.recipeService,
 		c.promptGen,
 		c.log,
